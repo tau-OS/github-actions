@@ -2,22 +2,6 @@ name: Sign RPM
 
 on:
   workflow_call:
-    inputs:
-      version:
-        required: true
-        type: string
-      name:
-        required: true
-        type: string
-      arch:
-        required: true
-        type: string
-      tauOSVersion:
-        required: true
-        type: string
-    secrets:
-      signingKey:
-        required: true
 
 jobs:
   sign:
@@ -26,14 +10,14 @@ jobs:
       image: fedora:latest
     steps:
       - uses: actions/download-artifact@v3
-        name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}.rpm
+        name: ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}.${{ env.PACKAGE_ARCH }}.rpm
       - run: sudo dnf install -y rpm-sign
       - run: sudo rpm --import https://tauos.co/gpg.asc
       - name: Import Signing Key
         run: |
-          echo -n "$GPG_SIGNING_KEY" | gpg --import
+          echo -n "$GPG_PRIVATE_KEY" | gpg --import
         env:
-          GPG_SIGNING_KEY: ${{ secrets.signingKey }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       # TODO there has to be a better way to handle this, this is a really fucking dumb way of doing this
       - run: sudo -u root bash
       - run: echo "%_signature gpg" >> ~/.rpmmacros
@@ -46,5 +30,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}.rpm
+          name: ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}.${{ env.PACKAGE_ARCH }}.rpm
           path: "**/*.rpm"

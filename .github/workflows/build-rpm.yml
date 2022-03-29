@@ -2,23 +2,6 @@ name: Build RPM
 
 on:
   workflow_call:
-    inputs:
-      version:
-        required: true
-        type: string
-      name:
-        required: true
-        type: string
-      arch:
-        required: true
-        type: string
-      tauOSVersion:
-        required: true
-        type: string
-      extraBuildPackages:
-        required: false
-        type: string
-        default: ""
 
 jobs:
   build:
@@ -32,10 +15,10 @@ jobs:
       - run: git config --global user.name "Runner"
       - run: git config --global user.email "runner@example.com"
       - run: make archive
-      - run: mv ${{ inputs.name }}-${{ inputs.version }}.tar.gz ~/rpmbuild/SOURCES
-      - run: rpmbuild -ba ${{ inputs.name }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)"
+      - run: mv ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}.tar.gz ~/rpmbuild/SOURCES
+      - run: rpmbuild -ba ${{ env.PACKAGE_NAME }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)"
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}.rpm
+          name: ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}.${{ env.PACKAGE_ARCH }}.rpm
           path: "**/*.rpm"
