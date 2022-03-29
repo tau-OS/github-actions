@@ -26,7 +26,7 @@ jobs:
         name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}.rpm
       - run: sudo dnf install -y rpm-sign
       - run: sudo rpm --import https://tauos.co/gpg.asc
-      - run: export GPG_TTY=$(tty)
+      - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
       - name: Import Signing Key
         run: |
           echo -n "$GPG_SIGNING_KEY" | gpg --import
