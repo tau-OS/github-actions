@@ -20,8 +20,8 @@ jobs:
       - run: git config --global user.name "Runner"
       - run: git config --global user.email "runner@example.com"
       - run: make archive
-      - run: mv ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}.tar.gz ~/rpmbuild/SOURCES
-      - run: rpmbuild -ba ${{ env.PACKAGE_NAME }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)"
+      - run: mv $PACKAGE_NAME-$PACKAGE_VERSION.tar.gz ~/rpmbuild/SOURCES
+      - run: rpmbuild -ba $PACKAGE_NAME.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)"
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
