@@ -1,0 +1,36 @@
+name: Build RPM
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      name:
+        required: true
+        type: string
+      arch:
+        required: true
+        type: string
+      tauOSVersion:
+        required: true
+        type: string
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - run: sudo dnf install -y rpmdevtools make git
+      - run: rpmdev-setuptree
+      - run: git config --global user.name "Runner"
+      - run: git config --global user.email "runner@example.com"
+      - run: make archive
+      - run: mv ${{ inputs.name }}-${{ inputs.version }}.tar.gz ~/rpmbuild/SOURCES
+      - run: rpmbuild -ba ${{ inputs.name }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)"
+      - name: Upload artifacts
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}
+        path: */*.rpm
