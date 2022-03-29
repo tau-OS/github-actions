@@ -3,6 +3,15 @@ name: Build RPM
 on:
   workflow_call:
     inputs:
+      version:
+        required: true
+        type: string
+      name:
+        required: true
+        type: string
+      arch:
+        required: true
+        type: string
       extraBuildPackages:
         required: false
         type: string
@@ -20,10 +29,10 @@ jobs:
       - run: git config --global user.name "Runner"
       - run: git config --global user.email "runner@example.com"
       - run: make archive
-      - run: mv $PACKAGE_NAME-$PACKAGE_VERSION.tar.gz ~/rpmbuild/SOURCES
-      - run: rpmbuild -ba $PACKAGE_NAME.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)"
+      - run: mv ${{ inputs.name }}-${{ inputs.version }}.tar.gz ~/rpmbuild/SOURCES
+      - run: rpmbuild -ba ${{ inputs.name }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)"
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}.${{ env.PACKAGE_ARCH }}.rpm
+          name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}.rpm
           path: "**/*.rpm"
