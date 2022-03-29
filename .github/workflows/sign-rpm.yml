@@ -20,7 +20,7 @@ on:
         required: true
 
 jobs:
-  build:
+  sign:
     runs-on: ubuntu-latest
     container:
       image: fedora:latest
