@@ -2,6 +2,10 @@ name: Build RPM
 
 on:
   workflow_call:
+    extraBuildPackages:
+      required: false
+      type: string
+      default: ""
 
 jobs:
   build:
