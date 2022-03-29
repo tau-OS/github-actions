@@ -32,10 +32,8 @@ jobs:
           echo -n "$GPG_SIGNING_KEY" | gpg --import
         env:
           GPG_SIGNING_KEY: ${{ secrets.signingKey }}
-      # TODO there has to be a better way to handle this, this is a really fucking dumb way of doing this
-      - run: sudo -u root bash
       - run: echo "%_signature gpg" >> ~/.rpmmacros
-      - run: echo "%_gpg_path /root/.gnupg" >> ~/.rpmmacros
+      - run: echo "%_gpg_path /github/home/.gnupg" >> ~/.rpmmacros
       - run: echo "%_gpg_name tauOS" >> ~/.rpmmacros
       - run: echo "%_gpgbin /usr/bin/gpg2" >> ~/.rpmmacros
       - run: echo "%__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --verbose --no-armor --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename} --digest-algo sha256 %{__plaintext_filename}'" >> ~/.rpmmacros
