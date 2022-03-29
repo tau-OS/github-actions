@@ -29,7 +29,11 @@ jobs:
         name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}.rpm
       - run: sudo dnf install -y rpm-sign
       - run: sudo rpm --import https://tauos.co/gpg.asc
-      - run: sudo gpg --import ${{ secrets.signingKey }}
+      - name: Import Signing Key
+        run: |
+          echo -n "$GPG_SIGNING_KEY" | gpg --import
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.signingKey }}
       # TODO there has to be a better way to handle this, this is a really fucking dumb way of doing this
       - run: sudo -u root bash
       - run: echo "%_signature gpg" >> ~/.rpmmacros
