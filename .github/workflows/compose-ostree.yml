@@ -22,7 +22,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: fedora:36
+      # Yes, this is unstable, but it also might fix things. Remove when new rpm-ostree patche is merged into stable
+      image: fedora:rawhide
       options: --privileged
     steps:
       - run: sudo dnf install ostree rpm-ostree rclone wget python3-pip python3-wheel python3-devel pkg-config cairo-devel make automake gcc gcc-c++ kernel-devel gobject-introspection-devel cairo-gobject-devel openssh openssh-clients -y
