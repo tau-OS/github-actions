@@ -15,6 +15,8 @@ on:
     secrets:
       signingKey:
         required: true
+      privateKey:
+        required: true
 
 jobs:
   build:
@@ -24,6 +26,10 @@ jobs:
       options: --privileged
     steps:
       - run: sudo dnf install ostree rpm-ostree rclone wget python3-pip python3-wheel python3-devel pkg-config cairo-devel make automake gcc gcc-c++ kernel-devel gobject-introspection-devel cairo-gobject-devel -y
+      - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
+        with:
+          ssh-private-key: ${{ secrets.privateKey }}
+          ssh-host: repo.tauos.co
       - uses: actions/checkout@v3
       - run: pip3 install ostree-push
       - run: ostree init --repo build-tree --mode archive
