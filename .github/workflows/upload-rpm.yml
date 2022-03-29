@@ -11,7 +11,7 @@ on:
         required: true
 
 jobs:
-  sign:
+  upload:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
