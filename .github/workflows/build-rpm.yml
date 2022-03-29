@@ -21,7 +21,7 @@ on:
         default: ""
 
 jobs:
-  build-rpm:
+  build:
     runs-on: ubuntu-latest
     container:
       image: fedora:latest
