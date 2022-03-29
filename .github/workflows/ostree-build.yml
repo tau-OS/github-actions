@@ -1,0 +1,45 @@
+name: Compose OSTree
+
+on:
+  workflow_call:
+    inputs:
+      ostreeRef:
+        required: true
+        type: string
+      osVariant:
+        required: true
+        type: string
+      upload:
+        required: false
+        type: boolean
+    secrets:
+      signingKey:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+      options: --privileged
+    steps:
+      - run: sudo dnf install ostree rpm-ostree rclone wget python3-pip python3-wheel python3-devel pkg-config cairo-devel make automake gcc gcc-c++ kernel-devel gobject-introspection-devel cairo-gobject-devel -y
+      - uses: actions/checkout@v3
+      - run: pip3 install ostree-push
+      - run: ostree init --repo build-tree --mode archive
+      - run: mkdir -p build-tree-cache
+      - name: Import Signing Key
+        run: |
+          echo -n "$GPG_SIGNING_KEY" | gpg --import
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.signingKey }}
+      - run: sudo rpm-ostree compose tree core.yaml --repo ../build-tree --cachedir=../build-tree-cache
+        working-directory: ${{ inputs.osVariant }}
+      - run: sudo chmod -R 777 ../build-tree
+        working-directory: ${{ inputs.osVariant }}
+      - run: ostree summary --repo ../build-tree -u
+        working-directory: ${{ inputs.osVariant }}
+      - run: ostree gpg-sign --repo ../build-tree ${{ inputs.ostreeRef }} 5D155AF6F77C8C9B
+        working-directory: ${{ inputs.osVariant }}
+      - run: ostree-push --repo build-tree yumrepo@repo.tauos.co:/var/www/repo.tauos.co/ostree
+        if: ${{ inputs.upload }}
