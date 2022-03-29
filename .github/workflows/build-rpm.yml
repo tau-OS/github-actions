@@ -22,8 +22,8 @@ jobs:
     container:
       image: fedora:latest
     steps:
-      - uses: actions/checkout@v3
       - run: sudo dnf install -y rpmdevtools make git
+      - uses: actions/checkout@v3
       - run: rpmdev-setuptree
       - run: git config --global user.name "Runner"
       - run: git config --global user.email "runner@example.com"
