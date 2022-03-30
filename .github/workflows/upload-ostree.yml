@@ -17,6 +17,8 @@ jobs:
       - uses: actions/download-artifact@v3
         name: ${{ inputs.osName }}
       - run: tar -xf */*.tar
+      - name: Install Dependencies
+        run: sudo apt-get install -y libostree-dev
       - run: pip3 install ostree-push
       - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
         with:
