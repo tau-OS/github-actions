@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
-        name: ${{ inputs.osName }}.tar
-      - run: tar -xf ${{ inputs.osName }}.tar
+        name: ${{ inputs.osName }}
+      - run: tar -xf */*.tar
       - run: pip3 install ostree-push
       - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
         with:

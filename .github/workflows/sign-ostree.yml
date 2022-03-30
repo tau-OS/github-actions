@@ -20,8 +20,8 @@ jobs:
       image: fedora:latest
     steps:
       - uses: actions/download-artifact@v3
-        name: ${{ inputs.osName }}.tar
-      - run: tar -xf ${{ inputs.osName }}.tar
+        name: ${{ inputs.osName }}
+      - run: tar -xf */*.tar
       - run: sudo dnf install -y ostree
       - run: sudo rpm --import https://tauos.co/gpg.asc
       - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
@@ -35,5 +35,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.osName }}.tar
+          name: ${{ inputs.osName }}
           path: build-tree.tar
