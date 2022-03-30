@@ -20,13 +20,13 @@ on:
         required: true
 jobs:
   build:
-    uses: ./.github/workflows/build-ostree.yml@main
+    uses: ./.github/workflows/build-ostree.yml
     with:
       ostreeRef: ${{ inputs.ostreeRef }}
       osVariant: ${{ inputs.osVariant }}
   sign:
     needs: build
-    uses: ./.github/workflows/sign-ostree.yml@main
+    uses: ./.github/workflows/sign-ostree.yml
     if: ${{ inputs.upload }}
     with:
       ostreeRef: ${{ inputs.ostreeRef }}
@@ -35,7 +35,7 @@ jobs:
       signingKey: ${{ secrets.signingKey }}
   upload:
     needs: sign
-    uses: ./.github/workflows/upload-ostree.yml@main
+    uses: ./.github/workflows/upload-ostree.yml
     with:
       ostreeRef: ${{ inputs.ostreeRef }}
       upload: ${{ inputs.upload }}
