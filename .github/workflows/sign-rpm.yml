@@ -23,7 +23,8 @@ jobs:
       image: fedora:latest
     steps:
       - uses: actions/download-artifact@v3
-        name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}
+        with:
+          name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}
       - run: sudo dnf install -y rpm-sign
       - run: sudo rpm --import https://tauos.co/gpg.asc
       - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV

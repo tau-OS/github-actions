@@ -20,7 +20,8 @@ jobs:
       image: fedora:latest
     steps:
       - uses: actions/download-artifact@v3
-        name: ${{ inputs.osName }}
+        with:
+          name: ${{ inputs.osName }}
       - run: tar -xf */*.tar
       - run: sudo dnf install -y ostree
       - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV

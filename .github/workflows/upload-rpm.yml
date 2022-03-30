@@ -24,7 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
-        name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}
+        with:
+          name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}
       - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
         with:
           ssh-private-key: ${{ secrets.privateKey }}

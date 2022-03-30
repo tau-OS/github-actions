@@ -13,9 +13,12 @@ on:
 jobs:
   upload:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:jammy
     steps:
       - uses: actions/download-artifact@v3
-        name: ${{ inputs.osName }}
+        with:
+          name: ${{ inputs.osName }}
       - run: tar -xf */*.tar
       - run: pip3 install ostree-push
       - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
