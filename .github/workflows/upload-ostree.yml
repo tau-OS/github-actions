@@ -13,14 +13,12 @@ on:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    container:
-      image: fedora:latest
     steps:
       - uses: actions/download-artifact@v3
         name: ${{ inputs.osName }}
       - run: tar -xf */*.tar
       - name: Install Dependencies
-        run: sudo dnf install -y ostree-devel python3-wheel python3-devel pkg-config cairo-devel make automake gcc gcc-c++ kernel-devel gobject-introspection-devel cairo-gobject-devel openssh openssh-clients
+        run: sudo apt-get install -y libostree-dev
       - run: pip3 install ostree-push
       - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
         with:
