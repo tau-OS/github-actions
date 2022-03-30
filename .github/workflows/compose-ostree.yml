@@ -26,14 +26,11 @@ jobs:
       image: fedora:rawhide
       options: --privileged
     steps:
-      - run: sudo dnf install -y which openssh openssh-clients
-      - run: mkdir -p ~/.ssh
-      - run: chmod 700 ~/.ssh
-      - run: echo "${{ secrets.privateKey }}" > ~/.ssh/id_rsa
-      - run: chmod 600 ~/.ssh/id_rsa
-      - run: ssh-keyscan repo.tauos.co > ~/.ssh/known_hosts
-      - run: chmod 644 ~/.ssh/known_hosts
-      - run: sudo dnf install ostree rpm-ostree rclone wget python3-pip python3-wheel python3-devel pkg-config cairo-devel make automake gcc gcc-c++ kernel-devel gobject-introspection-devel cairo-gobject-devel -y
+      - run: sudo dnf install ostree rpm-ostree rclone wget python3-pip python3-wheel python3-devel pkg-config cairo-devel make automake gcc gcc-c++ kernel-devel gobject-introspection-devel cairo-gobject-devel openssh openssh-clients -y
+      - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
+        with:
+          ssh-private-key: ${{ secrets.privateKey }}
+          ssh-host: repo.tauos.co
       - uses: actions/checkout@v3
       - run: pip3 install ostree-push
       - run: ostree init --repo build-tree --mode archive
