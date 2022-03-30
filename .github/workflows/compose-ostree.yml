@@ -1,0 +1,43 @@
+name: Compose OSTree
+
+on:
+  workflow_call:
+    inputs:
+      ostreeRef:
+        required: true
+        type: string
+      osVariant:
+        required: true
+        type: string
+      upload:
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      signingKey:
+        required: true
+      privateKey:
+        required: true
+jobs:
+  build:
+    uses: ./build-ostree.yml
+    with:
+      ostreeRef: ${{ inputs.ostreeRef }}
+      osVariant: ${{ inputs.osVariant }}
+  sign:
+    needs: build
+    uses: ./sign-ostree.yml
+    if: ${{ inputs.upload }}
+    with:
+      ostreeRef: ${{ inputs.ostreeRef }}
+      signingKey: ${{ secrets.signingKey }}
+    secrets:
+      signingKey: ${{ secrets.signingKey }}
+  upload:
+    needs: sign
+    uses: ./upload-ostree.yml
+    with:
+      ostreeRef: ${{ inputs.ostreeRef }}
+      upload: ${{ inputs.upload }}
+    secrets:
+      privateKey: ${{ secrets.privateKey }}
