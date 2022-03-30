@@ -21,7 +21,7 @@ jobs:
           name: ${{ inputs.osName }}
       - run: tar -xf *.tar
       - name: Install Dependencies
-        run: apt-get install -y libostree-dev
+        run: apt-get update && apt-get install -y libostree-dev
       - run: pip3 install ostree-push
       - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
         with:
