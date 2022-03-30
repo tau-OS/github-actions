@@ -1,0 +1,40 @@
+name: Build OSTree
+
+on:
+  workflow_call:
+    inputs:
+      ostreeRef:
+        required: true
+        type: string
+      osVariant:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      # Yes, this is unstable, but it also might fix things. Remove when new rpm-ostree patche is merged into stable
+      image: fedora:rawhide
+      options: --privileged
+    steps:
+      - run: sudo dnf install ostree rpm-ostree rclone wget python3-pip python3-wheel python3-devel pkg-config cairo-devel make automake gcc gcc-c++ kernel-devel gobject-introspection-devel cairo-gobject-devel -y
+      - uses: actions/checkout@v3
+      - run: ostree init --repo build-tree --mode archive
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: build-tree-cache
+          key: ${{ inputs.ostreeRef }}
+      - run: mkdir -p build-tree-cache
+      - run: sudo rpm-ostree compose tree core.yaml --repo ../build-tree --cachedir=../build-tree-cache
+        working-directory: ${{ inputs.osVariant }}
+      - run: sudo chmod -R 777 ../build-tree
+        working-directory: ${{ inputs.osVariant }}
+      - run: ostree summary --repo ../build-tree -u
+        working-directory: ${{ inputs.osVariant }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.ostreeRef }}
+          path: build-tree

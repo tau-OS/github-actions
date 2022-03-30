@@ -1,0 +1,34 @@
+name: Sign OSTree
+
+on:
+  workflow_call:
+    inputs:
+      ostreeRef:
+        required: true
+        type: string
+    secrets:
+      signingKey:
+        required: true
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - uses: actions/download-artifact@v3
+        name: ${{ inputs.ostreeRef }}
+      - run: sudo dnf install -y ostree
+      - run: sudo rpm --import https://tauos.co/gpg.asc
+      - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
+      - name: Import Signing Key
+        run: |
+          echo -n "$GPG_SIGNING_KEY" | gpg --import
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.signingKey }}
+      - run: ostree gpg-sign --repo build-tree ${{ inputs.ostreeRef }} 5D155AF6F77C8C9B
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.ostreeRef }}
+          path: build-tree

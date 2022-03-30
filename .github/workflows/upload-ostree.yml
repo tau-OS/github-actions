@@ -1,0 +1,24 @@
+name: Upload OSTree
+
+on:
+  workflow_call:
+    inputs:
+      ostreeRef:
+        required: true
+        type: string
+    secrets:
+      privateKey:
+        required: true
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        name: ${{ inputs.ostreeRef }}
+      - run: pip3 install ostree-push
+      - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
+        with:
+          ssh-private-key: ${{ secrets.privateKey }}
+          ssh-host: repo.tauos.co
+      - run: ostree-push --repo build-tree yumrepo@repo.tauos.co:/var/www/repo.tauos.co/ostree
