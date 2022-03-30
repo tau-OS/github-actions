@@ -21,7 +21,7 @@ jobs:
       image: fedora:rawhide
       options: --privileged
     steps:
-      - run: sudo dnf install ostree rpm-ostree rclone wget python3-pip python3-wheel python3-devel pkg-config cairo-devel make automake gcc gcc-c++ kernel-devel gobject-introspection-devel cairo-gobject-devel -y
+      - run: sudo dnf install ostree rpm-ostree -y
       - uses: actions/checkout@v3
       - run: ostree init --repo build-tree --mode archive
       - name: Cache
