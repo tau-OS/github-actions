@@ -40,5 +40,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.osName }}
+          name: ${{ inputs.osName }}.tar
           path: build-tree.tar
