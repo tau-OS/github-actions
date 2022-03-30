@@ -13,10 +13,18 @@ on:
 jobs:
   upload:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu:jammy
     steps:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.osName }}
       - run: tar -xf *.tar
       - name: Install Dependencies
-        run: apt-get install -y libostree-dev python3
+        run: sudo apt-get install -y libostree-dev
+      - run: pip3 install ostree-push
+      - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
+        with:
+          ssh-private-key: ${{ secrets.privateKey }}
+          ssh-host: repo.tauos.co
+      - run: ostree-push --repo build-tree yumrepo@repo.tauos.co:/var/www/repo.tauos.co/ostree
