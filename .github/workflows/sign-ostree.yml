@@ -6,6 +6,9 @@ on:
       ostreeRef:
         required: true
         type: string
+      osName:
+        required: true
+        type: string
     secrets:
       signingKey:
         required: true
@@ -17,7 +20,7 @@ jobs:
       image: fedora:latest
     steps:
       - uses: actions/download-artifact@v3
-        name: ${{ inputs.ostreeRef }}
+        name: ${{ inputs.osName }}
       - run: sudo dnf install -y ostree
       - run: sudo rpm --import https://tauos.co/gpg.asc
       - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
@@ -30,5 +33,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.ostreeRef }}
+          name: ${{ inputs.osName }}
           path: build-tree

@@ -9,6 +9,9 @@ on:
       osVariant:
         required: true
         type: string
+      osName:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -36,5 +39,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.ostreeRef }}
+          name: ${{ inputs.osName }}
           path: build-tree

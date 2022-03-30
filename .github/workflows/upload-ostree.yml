@@ -3,7 +3,7 @@ name: Upload OSTree
 on:
   workflow_call:
     inputs:
-      ostreeRef:
+      osName:
         required: true
         type: string
     secrets:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
-        name: ${{ inputs.ostreeRef }}
+        name: ${{ inputs.osName }}
       - run: pip3 install ostree-push
       - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
         with:
