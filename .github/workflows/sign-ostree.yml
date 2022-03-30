@@ -21,6 +21,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         name: ${{ inputs.osName }}
+      - run: tar -xf build-tree.tar
       - run: sudo dnf install -y ostree
       - run: sudo rpm --import https://tauos.co/gpg.asc
       - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
@@ -30,8 +31,9 @@ jobs:
         env:
           GPG_SIGNING_KEY: ${{ secrets.signingKey }}
       - run: ostree gpg-sign --repo build-tree ${{ inputs.ostreeRef }} 5D155AF6F77C8C9B
+      - run: tar -cf build-tree.tar build-tree
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.osName }}
-          path: build-tree
+          path: build-tree.tar

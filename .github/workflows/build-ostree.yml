@@ -36,8 +36,9 @@ jobs:
         working-directory: ${{ inputs.osVariant }}
       - run: ostree summary --repo ../build-tree -u
         working-directory: ${{ inputs.osVariant }}
+      - run: tar -cf build-tree.tar build-tree
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.osName }}
-          path: build-tree
+          path: build-tree.tar
