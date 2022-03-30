@@ -31,7 +31,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.privateKey }}
           ssh-host: repo.tauos.co
-      - run: ssh-keyscan -t rsa repo.tauos.co >> ~/.ssh/known_hosts
+      - run: ssh-keyscan repo.tauos.co >> ~/.ssh/known_hosts
       - uses: actions/checkout@v3
       - run: pip3 install ostree-push
       - run: ostree init --repo build-tree --mode archive
