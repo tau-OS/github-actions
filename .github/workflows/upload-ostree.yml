@@ -13,8 +13,6 @@ on:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    container:
-      image: ubuntu:jammy
     steps:
       - uses: actions/download-artifact@v3
         with:
