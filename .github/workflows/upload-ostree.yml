@@ -21,7 +21,7 @@ jobs:
           name: ${{ inputs.osName }}
       - run: tar -xf *.tar
       - name: Install Dependencies
-        run: apt-get update && apt-get install -y libcairo2-dev libostree-dev python3 build-essential python3-pip python3-wheel
+        run: apt-get update && apt-get install -y libcairo2-dev libostree-dev python3 build-essential python3-pip python3-wheel openssh-client
       - run: pip3 install ostree-push
       - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
         with:
