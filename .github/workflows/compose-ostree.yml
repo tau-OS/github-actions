@@ -26,10 +26,8 @@ jobs:
       image: fedora:rawhide
       options: --privileged
     steps:
-      - run: sudo dnf install -y which
-      - run: 'which ssh-agent || ( sudo dnf install -y openssh openssh-clients )'
-      - run: eval $(ssh-agent -s)
-      - run: echo "${{ secrets.privateKey }}" | tr -d '\r' | ssh-add -
+      - run: sudo dnf install -y which openssh openssh-clients
+      - run: echo "${{ secrets.privateKey }}" | ssh-add -
       - run: mkdir -p ~/.ssh
       - run: chmod 700 ~/.ssh
       - run: ssh-keyscan repo.tauos.co > ~/.ssh/known_hosts
