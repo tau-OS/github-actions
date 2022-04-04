@@ -21,7 +21,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: fedora:latest
+      image: fedora:36
     steps:
       - run: sudo dnf install -y rpmdevtools make git ${{ inputs.extraBuildPackages }}
       - uses: actions/checkout@v3
