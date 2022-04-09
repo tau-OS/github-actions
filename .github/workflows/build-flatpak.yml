@@ -6,9 +6,9 @@ on:
       manifest:
         required: true
         type: string
-      secrets:
-        repoToken:
-          required: true
+    secrets:
+      repoToken:
+        required: true
 
 jobs:
   build:
