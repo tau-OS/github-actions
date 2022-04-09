@@ -22,11 +22,9 @@ jobs:
         name: "Build"
         with:
           manifest-path: ${{ inputs.manifest }}
+          cache-key: flatpak-builder-${{ github.sha }}
       - uses: bilelmoussaoui/flatpak-github-actions/flat-manager@v3
         name: "Deploy"
         with:
           repository: catalogue
           flat-manager-url: https://catalogue.tauos.co/manager/
-          token: ${{ secrets.repoToken }}
-          end-of-life: "The application has been renamed to..."
-          end-of-life-rebase: "org.zbrown.Palette"
