@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: fedora:36
+      options: --privileged
     steps:
       - run: sudo dnf install -y flatpak flatpak-builder
       - uses: actions/checkout@v3
