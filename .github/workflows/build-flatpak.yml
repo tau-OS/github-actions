@@ -11,19 +11,22 @@ on:
         required: true
 
 jobs:
-  build:
+  flatpak:
     runs-on: ubuntu-latest
     container:
-      image: fedora:36
+      image: bilelmoussaoui/flatpak-github-actions:gnome-40
       options: --privileged
     steps:
-      - run: sudo dnf install -y flatpak flatpak-builder
-      - uses: actions/checkout@v3
-      - run: flatpak-builder --install-deps-from=flathub --repo=local-repo build ${{ inputs.manifest }}
-      - name: Upload Flatpak
-        run: |
-          export FLATPAK_BUILD=$(flat-manager-client create https://catalogue.tauos.co/manager/ stable)
-          flat-manager-client push --commit $FLATPAK_BUILD local-repo
-          flat-manager-client publish $FLATPAK_BUILD
-        env:
-          REPO_TOKEN: ${{ secrets.repoToken }}
+      - uses: actions/checkout@v2
+      - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v4
+        name: "Build"
+        with:
+          manifest-path: ${{ inputs.manifest }}
+      - uses: bilelmoussaoui/flatpak-github-actions/flat-manager@v3
+        name: "Deploy"
+        with:
+          repository: catalogue
+          flat-manager-url: https://catalogue.tauos.co/manager/
+          token: ${{ secrets.repoToken }}
+          end-of-life: "The application has been renamed to..."
+          end-of-life-rebase: "org.zbrown.Palette"
