@@ -36,7 +36,7 @@ jobs:
         env:
          TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
       - run: mkdir ~/.ssh
-      - run: tsh -i identity config > ~/.ssh/config
+      - run: tsh --proxy access.fyralabs.com -i identity config > ~/.ssh/config
       - run: ssh repo@tau-repo.access.fyralabs.com "mkdir -p /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
       - run: scp **/*.rpm repo@tau-repo.access.fyralabs.com:/var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/
       - run: ssh repo@tau-repo.access.fyralabs.com "createrepo --update /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
