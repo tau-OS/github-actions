@@ -30,7 +30,7 @@ jobs:
       - run: echo "$TELEPORT_IDENTITY" > identity
         env:
          TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
-      - run: echo 'export PATH=$HOME/bin:$PATH' > /etc/profile.d/nya.sh
+      - run: echo 'export PATH=$HOME/bin:$PATH' | sudo tee /etc/profile.d/nya.sh
       - run: |
           mkdir -p $HOME/bin
           cat >$HOME/bin/ssh <<EOL
