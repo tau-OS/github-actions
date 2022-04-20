@@ -9,6 +9,8 @@ on:
     secrets:
       privateKey:
         required: true
+      teleportIdentity:
+        required: true
 
 jobs:
   upload:
@@ -27,6 +29,6 @@ jobs:
       - run: sudo apt-get install teleport -y
       - run: echo "$TELEPORT_IDENTITY" > identity
         env:
-         TELEPORT_IDENTITY: ${{ secrets.TELEPORT_IDENTITY }}
+         TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
       - run: tsh -i identity config > ~/.ssh/config
       - run: ostree-push --repo build-tree repo@tau-repo.access.fyralabs.com:/var/www/repo.tauos.co/ostree
