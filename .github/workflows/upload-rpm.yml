@@ -26,11 +26,14 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}
-      - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
-        with:
-          ssh-private-key: ${{ secrets.privateKey }}
-          ssh-host: repo.tauos.co
-      - run: ssh yumrepo@repo.tauos.co "mkdir -p /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
-      - run: scp **/*.rpm yumrepo@repo.tauos.co:/var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/
-      - run: ssh yumrepo@repo.tauos.co "createrepo --update /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
-      - run: ssh yumrepo@repo.tauos.co "rm -f /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc && gpg --output /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc -u tauOS --no-tty --detach-sign --armor /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml"
+      - run: sudo curl https://deb.releases.teleport.dev/teleport-pubkey.asc -o /usr/share/keyrings/teleport-archive-keyring.asc
+      - run: echo "deb [signed-by=/usr/share/keyrings/teleport-archive-keyring.asc] https://deb.releases.teleport.dev/ stable main" | sudo tee /etc/apt/sources.list.d/teleport.list > /dev/null
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install teleport -y
+      - run: echo "$TELEPORT_IDENTITY" > identity
+        env:
+         TELEPORT_IDENTITY: ${{ secrets.TELEPORT_IDENTITY }}
+      - run: tsh ssh -i identity yumrepo@repo.tauos.co "mkdir -p /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
+      - run: tsh scp -i identity **/*.rpm yumrepo@repo.tauos.co:/var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/
+      - run: tsh ssh -i identity yumrepo@repo.tauos.co "createrepo --update /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
+      - run: tsh ssh -i identity yumrepo@repo.tauos.co "rm -f /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc && gpg --output /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc -u tauOS --no-tty --detach-sign --armor /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml"
