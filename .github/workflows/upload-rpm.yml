@@ -35,9 +35,7 @@ jobs:
       - run: echo "$TELEPORT_IDENTITY" > identity
         env:
          TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
-      - run: mkdir ~/.ssh
-      - run: tsh --proxy access.fyralabs.com -i identity config > ~/.ssh/config
-      - run: ssh repo@tau-repo.access.fyralabs.com "mkdir -p /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
-      - run: scp **/*.rpm repo@tau-repo.access.fyralabs.com:/var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/
-      - run: ssh repo@tau-repo.access.fyralabs.com "createrepo --update /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
-      - run: ssh repo@tau-repo.access.fyralabs.com "rm -f /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc && gpg --output /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc -u tauOS --no-tty --detach-sign --armor /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml"
+      - run: tsh ssh -i identity --proxy access.fyralabs.com repo@tau-repo "mkdir -p /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
+      - run: tsh scp -i identity --proxy access.fyralabs.com **/*.rpm repo@tau-repo:/var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/
+      - run: tsh ssh -i identity --proxy access.fyralabs.com repo@tau-repo "createrepo --update /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
+      - run: tsh ssh -i identity --proxy access.fyralabs.com repo@tau-repo "rm -f /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc && gpg --output /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc -u tauOS --no-tty --detach-sign --armor /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml"
