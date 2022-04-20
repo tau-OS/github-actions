@@ -30,11 +30,4 @@ jobs:
       - run: echo "$TELEPORT_IDENTITY" > identity
         env:
          TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
-      - run: echo "PATH=$HOME/bin:$PATH" >> $GITHUB_ENV
-      - run: |
-          mkdir -p $HOME/bin
-          cat >$HOME/bin/ssh <<EOL
-          #!/bin/sh
-          tsh --proxy access.fyralabs.com -i identity ssh $@
-          EOL
-      - run: ostree-push --repo build-tree repo@tau-repo:/var/www/repo.tauos.co/ostree
+      - run: ostree-push -o ProxyCommand="tsh proxy ssh -i identity --proxy=access.fyralabs.com %r@%h:%p" --repo build-tree repo@tau-repo:/var/www/repo.tauos.co/ostree
