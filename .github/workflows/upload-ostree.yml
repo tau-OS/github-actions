@@ -21,8 +21,12 @@ jobs:
       - name: Install Dependencies
         run: sudo apt-get install -y libostree-dev
       - run: pip3 install ostree-push
-      - uses: kielabokkie/ssh-key-and-known-hosts-action@v1
-        with:
-          ssh-private-key: ${{ secrets.privateKey }}
-          ssh-host: repo.tauos.co
-      - run: ostree-push --repo build-tree yumrepo@repo.tauos.co:/var/www/repo.tauos.co/ostree
+      - run: sudo curl https://deb.releases.teleport.dev/teleport-pubkey.asc -o /usr/share/keyrings/teleport-archive-keyring.asc
+      - run: echo "deb [signed-by=/usr/share/keyrings/teleport-archive-keyring.asc] https://deb.releases.teleport.dev/ stable main" | sudo tee /etc/apt/sources.list.d/teleport.list > /dev/null
+      - run: sudo apt-get update -y
+      - run: sudo apt-get install teleport -y
+      - run: echo "$TELEPORT_IDENTITY" > identity
+        env:
+         TELEPORT_IDENTITY: ${{ secrets.TELEPORT_IDENTITY }}
+      - run: tsh -i identity config > ~/.ssh/config
+      - run: ostree-push --repo build-tree repo@tau-repo.access.fyralabs.com:/var/www/repo.tauos.co/ostree
