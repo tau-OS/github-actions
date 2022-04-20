@@ -28,6 +28,7 @@ jobs:
       - run: rpmdev-setuptree
       - run: git config --global user.name "Runner"
       - run: git config --global user.email "runner@example.com"
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: make archive
       - run: mv ${{ inputs.name }}-${{ inputs.version }}.tar.gz ~/rpmbuild/SOURCES
       - run: rpmbuild -ba ${{ inputs.name }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)"
