@@ -30,5 +30,6 @@ jobs:
       - run: echo "$TELEPORT_IDENTITY" > identity
         env:
          TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
-      - run: tsh -i identity config > ~/.ssh/config
+      - run: mkdir ~/.ssh
+      - run: tsh --proxy access.fyralabs.com -i identity config > ~/.ssh/config
       - run: ostree-push --repo build-tree repo@tau-repo.access.fyralabs.com:/var/www/repo.tauos.co/ostree
