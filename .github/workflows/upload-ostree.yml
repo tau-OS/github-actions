@@ -31,4 +31,5 @@ jobs:
         env:
          TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
       - run: tsh ssh -i identity --proxy access.fyralabs.com repo@tau-repo "echo nya~"
+      - run: tsh proxy ssh --debug -i identity --proxy=access.fyralabs.com %r@%h:%p
       - run: ostree-push -o ProxyCommand="tsh proxy ssh --debug -i identity --proxy=access.fyralabs.com %r@%h:%p" --repo build-tree repo@tau-repo:/var/www/repo.tauos.co/ostree
