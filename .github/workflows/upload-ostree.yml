@@ -11,8 +11,6 @@ on:
         required: true
       teleportIdentity:
         required: true
-      teleportSshPrivateKey:
-        required: true
 jobs:
   upload:
     runs-on: ubuntu-latest
@@ -28,7 +26,8 @@ jobs:
       - run: echo "deb [signed-by=/usr/share/keyrings/teleport-archive-keyring.asc] https://deb.releases.teleport.dev/ stable main" | sudo tee /etc/apt/sources.list.d/teleport.list > /dev/null
       - run: sudo apt-get update -y
       - run: sudo apt-get install teleport -y
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.teleportSshPrivateKey }}
-      - run: ostree-push -o ProxyCommand="tsh proxy ssh --proxy=access.fyralabs.com %r@%h:%p" --repo build-tree -p 3022 repo@tau-repo.access.fyralabs.com:/var/www/repo.tauos.co/ostree
+      - run: echo "$TELEPORT_IDENTITY" > identity
+        env:
+         TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
+      - run: echo 'tsh ssh -i identity --proxy access.fyralabs.com $@' | sudo tee /usr/local/sbin/ssh 
+      - run: ostree-push --repo build-tree repo@tau-repo:/var/www/repo.tauos.co/ostree
