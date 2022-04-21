@@ -28,8 +28,9 @@ jobs:
       - run: echo "deb [signed-by=/usr/share/keyrings/teleport-archive-keyring.asc] https://deb.releases.teleport.dev/ stable main" | sudo tee /etc/apt/sources.list.d/teleport.list > /dev/null
       - run: sudo apt-get update -y
       - run: sudo apt-get install teleport -y
-      - run: echo "$TELEPORT_SSH_PRIVATE_KEY" > private.key
+      - run: mkdir -p ~/.ssh/
+      - run: echo "$TELEPORT_SSH_PRIVATE_KEY" > ~/.ssh/private.key
         env:
          TELEPORT_SSH_PRIVATE_KEY: ${{ secrets.teleportSshPrivateKey }}
-      - run: ssh-add private.key
+      - run: sudo chmod 600 ~/.ssh/private.key
       - run: ostree-push -o ProxyCommand="tsh proxy ssh --proxy=access.fyralabs.com %r@%h:%p" --repo build-tree -p 3022 repo@tau-repo.access.fyralabs.com:/var/www/repo.tauos.co/ostree
