@@ -29,6 +29,6 @@ jobs:
       - run: echo "$TELEPORT_IDENTITY" > identity
         env:
          TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
-      - run: echo 'tsh ssh -i identity --proxy access.fyralabs.com $@' | sudo tee /usr/local/sbin/ssh
-      - run: sudo chmod +x /usr/local/sbin/ssh
+      - run: echo 'tsh ssh -i identity --proxy access.fyralabs.com $@' | sudo tee /home/runner/.local/bin/ssh
+      - run: sudo chmod +x /home/runner/.local/bin/ssh
       - run: ostree-push --repo build-tree repo@tau-repo:/var/www/repo.tauos.co/ostree
