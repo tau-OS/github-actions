@@ -7,7 +7,9 @@ on:
         required: true
         type: string
     secrets:
-      privateKey:
+      repoKnownHosts:
+        required: true
+      repoPrivateKey:
         required: true
       teleportIdentity:
         required: true
@@ -29,6 +31,10 @@ jobs:
       - run: echo "$TELEPORT_IDENTITY" > identity
         env:
          TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
-      - run: echo -e '#!/bin/sh\ntsh ssh -i identity --proxy access.fyralabs.com `echo "$@" | sed 's/\-M//' | sed -E 's/\-S [^ ]+//'`' | tee /home/runner/.local/bin/ssh
-      - run: sudo chmod +x /home/runner/.local/bin/ssh
-      - run: ostree-push --repo build-tree repo@tau-repo:/var/www/repo.tauos.co/ostree
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2.3.1
+        with:
+          key: ${{ secrets.repoPrivateKey }}
+          known_hosts: ${{ secrets.repoKnownHosts }}
+      - run: tsh ssh -i identity --proxy access.fyralabs.com -N -L 8000:localhost:22 repo@tau-repo &
+      - run: ostree-push --repo build-tree -p 8000 repo@localhost:/var/www/repo.tauos.co/ostree
