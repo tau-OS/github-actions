@@ -3,13 +3,7 @@ name: Sign RPM
 on:
   workflow_call:
     inputs:
-      version:
-        required: true
-        type: string
       name:
-        required: true
-        type: string
-      arch:
         required: true
         type: string
     secrets:
@@ -24,7 +18,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}
+          name: ${{ inputs.name }}-unsigned
       - run: sudo dnf install -y rpm-sign
       - run: sudo rpm --import https://tauos.co/gpg.asc
       - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
@@ -43,5 +37,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}.rpm
+          name:  ${{ inputs.name }}-signed
           path: "**/*.rpm"
