@@ -32,7 +32,7 @@ jobs:
       - run: |
           for arch in ${{ inputs.archs }}
           do
-            mock --resultdir . --arch=$arch *.src.rpm || cat build.log
+            mock --resultdir . --arch=$arch *.src.rpm || (cat build.log && exit 1)
           done
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
