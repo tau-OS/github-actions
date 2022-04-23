@@ -21,8 +21,8 @@ jobs:
       - run: git config --global user.name "Runner"
       - run: git config --global user.email "runner@example.com"
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - run: echo "VERSION=$(awk '/Version:/ { print $$2 }' ${{ inputs.name }}.spec)" >> $GITHUB_ENV
-      - run: echo "RELEASE=$(awk '/Release:/ { print $$2 }' ${{ inputs.name }}.spec | sed 's|%{?dist}||g')" >> $GITHUB_ENV
+      - run: echo "VERSION=$(awk '/Version:/ { print $2 }' ${{ inputs.name }}.spec)" >> $GITHUB_ENV
+      - run: echo "RELEASE=$(awk '/Release:/ { print $2 }' ${{ inputs.name }}.spec | sed 's|%{?dist}||g')" >> $GITHUB_ENV
       - run: echo "TAG=$NAME-$VERSION" >> $GITHUB_ENV
       - run: git archive --format=tar --prefix=${{ inputs.name }}-$VERSION/ HEAD > $TAG.tar
       - run: gzip -f $TAG.tar
