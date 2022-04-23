@@ -16,7 +16,7 @@ jobs:
       image: fedora:36
       options: --cap-add=SYS_ADMIN --privileged
     steps:
-      - run: sudo dnf install -y rpmdevtools make git mock
+      - run: sudo dnf install -y rpmdevtools make git mock rpm-build
       - uses: actions/checkout@v3
       - run: rpmdev-setuptree
       - run: git config --global user.name "Runner"
