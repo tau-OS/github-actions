@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: fedora:36
-      options: --cap-add=SYS_ADMIN
+      options: --cap-add=SYS_ADMIN --privileged
     steps:
       - run: sudo dnf install -y rpmdevtools make git mock
       - uses: actions/checkout@v3
