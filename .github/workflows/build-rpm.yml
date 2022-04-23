@@ -36,5 +36,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.name }}-${{ inputs.version }}
+          name: ${{ inputs.name }}-unsigned
           path: "**/*.rpm"
