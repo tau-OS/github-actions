@@ -34,6 +34,7 @@ jobs:
           do
             mock --resultdir . --arch=$arch *.src.rpm || (cat build.log && exit 1)
           done
+      - run: ls
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
