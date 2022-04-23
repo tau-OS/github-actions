@@ -10,8 +10,6 @@ on:
         required: true
         type: string
     secrets:
-      privateKey:
-        required: true
       teleportIdentity:
         required: true
 
