@@ -3,37 +3,38 @@ name: Build RPM
 on:
   workflow_call:
     inputs:
-      version:
-        required: true
-        type: string
       name:
         required: true
         type: string
-      arch:
+      archs:
         required: true
         type: string
-      extraBuildPackages:
-        required: false
-        type: string
-        default: ""
-
 jobs:
   build:
     runs-on: ubuntu-latest
     container:
       image: fedora:36
     steps:
-      - run: sudo dnf install -y rpmdevtools make git ${{ inputs.extraBuildPackages }}
+      - run: sudo dnf install -y rpmdevtools make git mock
       - uses: actions/checkout@v3
       - run: rpmdev-setuptree
       - run: git config --global user.name "Runner"
       - run: git config --global user.email "runner@example.com"
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - run: make archive
-      - run: mv ${{ inputs.name }}-${{ inputs.version }}.tar.gz ~/rpmbuild/SOURCES
-      - run: rpmbuild -ba ${{ inputs.name }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)"
+      - run: echo "VERSION=$(awk '/Version:/ { print $$2 }' ${{ inputs.name }}.spec)" >> $GITHUB_ENV
+      - run: echo "RELEASE=$(awk '/Release:/ { print $$2 }' ${{ inputs.name }}.spec | sed 's|%{?dist}||g')" >> $GITHUB_ENV
+      - run: echo "TAG=$NAME-$VERSION" >> $GITHUB_ENV
+      - run: git archive --format=tar --prefix=${{ inputs.name }}-$VERSION/ HEAD > $TAG.tar
+      - run: gzip -f $TAG.tar
+      - run: spectool -g -R ${{ inputs.name }}.spec
+      - run: rpmbuild -bs ${{ inputs.name }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)" --undefine=_disable_source_fetch --define '_sourcedir .'
+      - run: |
+          for arch in ${{ inputs.archs }}
+          do
+            mock -r fedora-36-x86_64 --resultdir . --arch=$arch *.src.rpm
+          done
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}
+          name: ${{ inputs.name }}-${{ inputs.version }}
           path: "**/*.rpm"
