@@ -6,13 +6,7 @@ on:
       tauOSVersion:
         required: true
         type: string
-      version:
-        required: true
-        type: string
       name:
-        required: true
-        type: string
-      arch:
         required: true
         type: string
     secrets:
@@ -27,7 +21,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.name }}-${{ inputs.version }}.${{ inputs.arch }}
+          name: ${{ inputs.name }}-signed
       - run: sudo curl https://deb.releases.teleport.dev/teleport-pubkey.asc -o /usr/share/keyrings/teleport-archive-keyring.asc
       - run: echo "deb [signed-by=/usr/share/keyrings/teleport-archive-keyring.asc] https://deb.releases.teleport.dev/ stable main" | sudo tee /etc/apt/sources.list.d/teleport.list > /dev/null
       - run: sudo apt-get update -y
