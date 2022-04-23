@@ -32,7 +32,7 @@ jobs:
       - run: |
           for arch in ${{ inputs.archs }}
           do
-            mock --isolation=simple --resultdir . --arch=$arch *.src.rpm
+            mock --isolation=chroot --resultdir . --arch=$arch *.src.rpm
           done
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
