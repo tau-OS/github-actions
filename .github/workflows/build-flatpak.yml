@@ -28,3 +28,4 @@ jobs:
         with:
           repository: catalogue
           flat-manager-url: https://catalogue.tauos.co/manager/
+          token: ${{ secrets.repoToken }}
