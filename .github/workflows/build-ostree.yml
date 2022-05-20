@@ -30,7 +30,7 @@ jobs:
           path: build-tree-cache
           key: ${{ inputs.ostreeRef }}
       - run: mkdir -p build-tree-cache
-      - run: sudo rpm-ostree compose tree core.yaml --repo ../build-tree --cachedir=../build-tree-cache
+      - run: sudo rpm-ostree compose tree core.yaml --repo ../build-tree --cachedir=../build-tree-cache --unified-core
         working-directory: ${{ inputs.osVariant }}
       - run: sudo chmod -R 777 ../build-tree
         working-directory: ${{ inputs.osVariant }}
