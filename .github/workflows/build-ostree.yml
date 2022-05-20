@@ -21,7 +21,7 @@ jobs:
       image: fedora:rawhide
       options: --privileged
     steps:
-      - run: sudo dnf install ostree rpm-ostree selinux-policy -y
+      - run: sudo dnf install ostree rpm-ostree selinux-policy @development-tools @c-development -y
       - uses: actions/checkout@v3
       - run: ostree init --repo build-tree --mode archive
       - name: Cache
