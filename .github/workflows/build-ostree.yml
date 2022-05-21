@@ -35,7 +35,7 @@ jobs:
       - run: mkdir -p build-tree-cache
       - run: sudo rpm-ostree compose tree core.yaml --repo ../build-tree --cachedir=../build-tree-cache $FLAGS
         env:
-          FLAGS: ${{ inputs.unifiedCore == 'true' && '--unified-core' || '' }}
+          FLAGS: ${{ inputs.unifiedCore == true && '--unified-core' || '' }}
         working-directory: ${{ inputs.osVariant }}
       - run: sudo chmod -R 777 ../build-tree
         working-directory: ${{ inputs.osVariant }}
