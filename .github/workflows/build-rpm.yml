@@ -35,7 +35,7 @@ jobs:
       - run: |
           for arch in ${{ inputs.archs }}
           do
-            mock --addrepo 'https://repo.tauos.co/releases/1.1/' --resultdir . --arch=$arch *.src.rpm || (cat build.log && exit 1)
+            mock --addrepo 'https://repo.tauos.co/releases/1.1/' --enable-network --resultdir . --arch=$arch *.src.rpm || (cat build.log && exit 1)
           done
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
