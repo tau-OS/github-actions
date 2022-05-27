@@ -21,7 +21,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ inputs.aarch64 == true && ['self-hosted', 'ARM64'] || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.aarch64 == true && "['self-hosted', 'ARM64']" || 'ubuntu-latest' }}
     container:
       # Yes, this is unstable, but it also might fix things. Remove when new rpm-ostree patche is merged into stable
       image: fedora:rawhide
