@@ -12,6 +12,9 @@ on:
       runsOn:
         default: ubuntu-latest
         type: string
+      primaryArch:
+        default: noarch
+        type: string
 jobs:
   build:
     runs-on: ${{ inputs.runsOn }}
@@ -43,5 +46,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.name }}-unsigned
+          name: ${{ inputs.name }}-${{ inputs.primaryArch }}-unsigned
           path: "**/*.rpm"

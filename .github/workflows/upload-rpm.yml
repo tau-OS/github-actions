@@ -9,6 +9,9 @@ on:
       name:
         required: true
         type: string
+      primaryArch:
+        default: noarch
+        type: string
     secrets:
       teleportIdentity:
         required: true
@@ -19,7 +22,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.name }}-signed
+          name: ${{ inputs.name }}-${{ inputs.primaryArch }}-signed
       - run: sudo curl https://deb.releases.teleport.dev/teleport-pubkey.asc -o /usr/share/keyrings/teleport-archive-keyring.asc
       - run: echo "deb [signed-by=/usr/share/keyrings/teleport-archive-keyring.asc] https://deb.releases.teleport.dev/ stable main" | sudo tee /etc/apt/sources.list.d/teleport.list > /dev/null
       - run: sudo apt-get update -y
