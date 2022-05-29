@@ -15,13 +15,13 @@ on:
       unifiedCore:
         type: boolean
         default: true
-      aarch64:
-        default: false
-        type: boolean
+      runsOn:
+        default: ubuntu-latest
+        type: string
 
 jobs:
   build:
-    runs-on: ${{ inputs.aarch64 == true && 'self-hosted' || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runsOn }}
     container:
       # Yes, this is unstable, but it also might fix things. Remove when new rpm-ostree patche is merged into stable
       image: fedora:rawhide

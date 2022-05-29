@@ -9,9 +9,12 @@ on:
       archs:
         required: true
         type: string
+      runsOn:
+        default: ubuntu-latest
+        type: string
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runsOn }}
     container:
       image: fedora:36
       options: --cap-add=SYS_ADMIN --privileged
