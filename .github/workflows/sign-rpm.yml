@@ -6,7 +6,7 @@ on:
       name:
         required: true
         type: string
-      primaryArch:
+      buildVariant:
         default: noarch
         type: string
     secrets:
@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.name }}-${{ inputs.primaryArch }}-unsigned
+          name: ${{ inputs.name }}-${{ inputs.buildVariant }}-unsigned
       - run: sudo dnf install -y rpm-sign
       - run: sudo rpm --import https://tauos.co/gpg.asc
       - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
@@ -40,5 +40,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name:  ${{ inputs.name }}-${{ inputs.primaryArch }}-signed
+          name:  ${{ inputs.name }}-${{ inputs.buildVariant }}-signed
           path: "**/*.rpm"
