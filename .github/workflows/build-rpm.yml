@@ -6,9 +6,6 @@ on:
       name:
         required: true
         type: string
-      archs:
-        required: true
-        type: string
       runsOn:
         default: ubuntu-latest
         type: string
@@ -38,11 +35,7 @@ jobs:
       - run: gzip -f $TAG.tar
       - run: spectool -g -R ${{ inputs.name }}.spec
       - run: rpmbuild -bs ${{ inputs.name }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)" --undefine=_disable_source_fetch --define '_sourcedir .'
-      - run: |
-          for arch in ${{ inputs.archs }}
-          do
-            mock --addrepo 'https://repo.tauos.co/releases/1.1/' --enable-network --resultdir . --arch=$arch *.src.rpm || (cat build.log && exit 1)
-          done
+      - run: mock --addrepo 'https://repo.tauos.co/releases/1.1/' --enable-network --resultdir . *.src.rpm || (cat build.log && exit 1)
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
