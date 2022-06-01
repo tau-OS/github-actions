@@ -23,8 +23,7 @@ jobs:
   build:
     runs-on: ${{ inputs.runsOn }}
     container:
-      # Yes, this is unstable, but it also might fix things. Remove when new rpm-ostree patche is merged into stable
-      image: fedora:rawhide
+      image: fedora:36
       options: --privileged
     steps:
       - run: sudo dnf install ostree rpm-ostree selinux-policy -y
