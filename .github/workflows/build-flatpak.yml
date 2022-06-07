@@ -1,4 +1,4 @@
-name: Build and Push Flatpak
+name: Build Flatpak
 
 on:
   workflow_call:
@@ -11,21 +11,58 @@ on:
         required: true
 
 jobs:
-  flatpak:
-    runs-on: ubuntu-latest
+  build:
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-40
-      options: --privileged
+      image: fedora:36
+      options: --cap-add=SYS_ADMIN --privileged
     steps:
-      - uses: actions/checkout@v2
-      - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v4
-        name: "Build"
+      - uses: easimon/maximize-build-space@v4
         with:
-          manifest-path: ${{ inputs.manifest }}
-          cache: false
-      - uses: bilelmoussaoui/flatpak-github-actions/flat-manager@v3
-        name: "Deploy"
+          root-reserve-mb: 16000
+          swap-size-mb: 1024
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-haskell: "true"
+
+      - run: sudo dnf install -y ccache flatpak flatpak-builder python3-aiohttp python3-gobject python3-tenacity
+      - uses: actions/checkout@v3
         with:
-          repository: catalogue
-          flat-manager-url: https://catalogue.tauos.co/manager/
-          token: ${{ secrets.repoToken }}
+          submodules: "recursive"
+
+      - run: |
+          curl https://raw.githubusercontent.com/flatpak/flat-manager/0.3.7/flat-manager-client > ./flat-manager-client
+          sudo mv ./flat-manager-client /usr/bin/flat-manager-client
+          sudo chown root: /usr/bin/flat-manager-client
+          sudo chmod +x /usr/bin/flat-manager-client
+          sudo flatpak remote-add --system --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - uses: actions/cache@v2
+        with:
+          path: ./.flatpak-builder
+          key: flatpak-builder-arm64-${{ github.sha }}
+          restore-keys: flatpak-builder-arm64-
+
+      - run: flatpak-builder --install-deps-from=flathub --ccache --repo=repo builddir ${{ inputs.manifest }}
+
+      - run: |
+          BUILD_ID=`flat-manager-client create https://catalogue.tauos.co stable`
+          echo "build_id=$BUILD_ID" >> $GITHUB_ENV
+        env:
+          REPO_TOKEN: ${{ secrets.repoToken }}
+
+      - run: flat-manager-client push ${{ env.build_id }} ./repo
+        env:
+          REPO_TOKEN: ${{ secrets.repoToken }}
+
+      - run: flat-manager-client commit --wait ${{ env.build_id }}
+        env:
+          REPO_TOKEN: ${{ secrets.repoToken }}
+
+      - run: flat-manager-client publish --wait ${{ env.build_id }}
+        env:
+          REPO_TOKEN: ${{ secrets.repoToken }}
+
+      - run: flat-manager-client purge ${{ env.build_id }}
+        if: ${{ always() && env.build_id }}
+        env:
+          REPO_TOKEN: ${{ secrets.repoToken }}
