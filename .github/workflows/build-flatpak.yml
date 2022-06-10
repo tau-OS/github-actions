@@ -12,6 +12,7 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-latest
     container:
       image: fedora:36
       options: --cap-add=SYS_ADMIN --privileged
