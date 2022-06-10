@@ -36,5 +36,5 @@ jobs:
         with:
           key: ${{ secrets.repoPrivateKey }}
           known_hosts: ${{ secrets.repoKnownHosts }}
-      - run: tsh ssh -i identity --proxy access.fyralabs.com -N -L 8000:localhost:22 repo@tau-repo &
+      - run: tsh ssh -i identity --proxy access.fyralabs.com -N -L 8000:localhost:22 repo@tau-repos &
       - run: ostree-push --repo build-tree -p 8000 repo@localhost:/var/www/repo.tauos.co/ostree
