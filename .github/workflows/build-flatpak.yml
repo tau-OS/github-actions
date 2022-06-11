@@ -17,11 +17,12 @@ jobs:
       image: fedora:36
       options: --cap-add=SYS_ADMIN --privileged
     steps:
-      - run: sudo dnf install -y ccache flatpak flatpak-builder python3-aiohttp python3-gobject python3-tenacity procps
+      - run: sudo dnf install -y procps-ng
       - uses: easimon/maximize-build-space@v5
         with:
           root-reserve-mb: 16000
           swap-size-mb: 1024
+      - run: sudo dnf install -y ccache flatpak flatpak-builder python3-aiohttp python3-gobject python3-tenacity
       - uses: actions/checkout@v3
         with:
           submodules: "recursive"
