@@ -26,6 +26,7 @@ jobs:
       image: fedora:36
       options: --privileged
     steps:
+        # TODO: Fix this
       - run: sudo dnf install ostree rpm-ostree-2022.9-1.fc36 selinux-policy -y
       - uses: actions/checkout@v3
       - run: ostree init --repo build-tree --mode archive
