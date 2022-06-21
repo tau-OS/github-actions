@@ -59,29 +59,29 @@ jobs:
             BUILD_ID=`flat-manager-client create https://catalogue.tauos.co stable`
             echo "build_id=$BUILD_ID" >> $GITHUB_ENV
         env:
-            REPO_TOKEN: ${{ secrets.repoToken }}
+            REPO_TOKEN: ${{ secrets.FLATPAK_REPO_TOKEN }}
 
       - name: Push Build
         run: |
             flat-manager-client push ${{ env.build_id }} ./repo
         env:
-            REPO_TOKEN: ${{ secrets.repoToken }}
+            REPO_TOKEN: ${{ secrets.FLATPAK_REPO_TOKEN }}
       
       - name: Commit Build
         run: |
             flat-manager-client commit --wait ${{ env.build_id }}
         env:
-            REPO_TOKEN: ${{ secrets.repoToken }}
+            REPO_TOKEN: ${{ secrets.FLATPAK_REPO_TOKEN }}
       
       - name: Publish Build
         run: |
             flat-manager-client publish --wait ${{ env.build_id }}
         env:
-            REPO_TOKEN: ${{ secrets.repoToken }}
+            REPO_TOKEN: ${{ secrets.FLATPAK_REPO_TOKEN }}
 
       - name: Purge Build
         if: ${{ always() && env.build_id }}
         run: |
             flat-manager-client purge ${{ env.build_id }}
         env:
-            REPO_TOKEN: ${{ secrets.repoToken }}
+            REPO_TOKEN: ${{ secrets.FLATPAK_REPO_TOKEN }}
