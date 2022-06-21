@@ -13,7 +13,11 @@ on:
         default: noarch
         type: string
     secrets:
-      teleportIdentity:
+      repoKnownHosts:
+        required: true
+      repoPrivateKey:
+        required: true
+      repoIP:
         required: true
 
 jobs:
@@ -23,14 +27,12 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.name }}-${{ inputs.buildVariant }}-signed
-      - run: sudo curl https://deb.releases.teleport.dev/teleport-pubkey.asc -o /usr/share/keyrings/teleport-archive-keyring.asc
-      - run: echo "deb [signed-by=/usr/share/keyrings/teleport-archive-keyring.asc] https://deb.releases.teleport.dev/ stable main" | sudo tee /etc/apt/sources.list.d/teleport.list > /dev/null
-      - run: sudo apt-get update -y
-      - run: sudo apt-get install teleport -y
-      - run: echo "$TELEPORT_IDENTITY" > identity
-        env:
-         TELEPORT_IDENTITY: ${{ secrets.teleportIdentity }}
-      - run: tsh ssh -i identity --proxy access.fyralabs.com repo@tau-repos "mkdir -p /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
-      - run: shopt -s globstar && tsh scp -i identity --proxy access.fyralabs.com **/*.rpm repo@tau-repos:/var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/
-      - run: tsh ssh -i identity --proxy access.fyralabs.com repo@tau-repos "createrepo --update /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
-      - run: tsh ssh -i identity --proxy access.fyralabs.com repo@tau-repos "rm -f /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc && gpg --output /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc -u tauOS --no-tty --detach-sign --armor /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml"
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2.3.1
+        with:
+          key: ${{ secrets.repoPrivateKey }}
+          known_hosts: ${{ secrets.repoKnownHosts }}
+      - run: ssh repo@${{ secrets.repoIP }} "mkdir -p /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
+      - run: shopt -s globstar && scp **/*.rpm repo@${{ secrets.repoIP }}:/var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/
+      - run: ssh repo@${{ secrets.repoIP }} "createrepo --update /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/"
+      - run: ssh repo@${{ secrets.repoIP }} "rm -f /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc && gpg --output /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml.asc -u tauOS --no-tty --detach-sign --armor /var/www/repo.tauos.co/releases/${{ inputs.tauOSVersion }}/repodata/repomd.xml"
