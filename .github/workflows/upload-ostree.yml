@@ -29,4 +29,4 @@ jobs:
         with:
           key: ${{ secrets.repoPrivateKey }}
           known_hosts: ${{ secrets.repoKnownHosts }}
-      - run: ostree-push --repo build-tree -p 8000 repo@${{ secrets.repoIP }}:/var/www/repo.tauos.co/ostree
+      - run: ostree-push --repo build-tree repo@${{ secrets.repoIP }}:/var/www/repo.tauos.co/ostree
