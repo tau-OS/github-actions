@@ -63,7 +63,7 @@ jobs:
 
       - name: Push Build
         run: |
-            flat-manager-client push ${{ env.build_id }} ./repo
+            flat-manager-client push --commit ${{ env.build_id }} ./repo
         env:
             REPO_TOKEN: ${{ secrets.repoToken }}
       
