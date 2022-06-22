@@ -63,19 +63,19 @@ jobs:
 
       - name: Push Build
         run: |
-            flat-manager-client push --wait --commit ${{ env.build_id }} ./repo
+            flat-manager-client push --wait --commit "${{ env.build_id }}" ./repo
         env:
             REPO_TOKEN: ${{ secrets.repoToken }}
       
       - name: Publish Build
         run: |
-            flat-manager-client publish --wait ${{ env.build_id }}
+            flat-manager-client publish --wait "${{ env.build_id }}"
         env:
             REPO_TOKEN: ${{ secrets.repoToken }}
 
       - name: Purge Build
         if: ${{ always() && env.build_id }}
         run: |
-            flat-manager-client purge ${{ env.build_id }}
+            flat-manager-client purge "${{ env.build_id }}"
         env:
             REPO_TOKEN: ${{ secrets.repoToken }}
