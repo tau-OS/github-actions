@@ -1,0 +1,92 @@
+name: Compose OSTree
+
+on:
+  workflow_call:
+    inputs:
+      ostreeRef:
+        required: true
+        type: string
+      osVariant:
+        required: true
+        type: string
+      unifiedCore:
+        type: boolean
+        default: false
+        required: false
+      runsOn:
+        default: ubuntu-latest
+        type: string
+        required: false
+      gpgKeyID:
+        required: true
+        type: string
+      upload:
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      signingKey:
+        required: true
+      repoKnownHosts:
+        required: true
+      repoPrivateKey:
+        required: true
+      repoIP:
+        required: true
+
+jobs:
+  compose:
+    runs-on: ${{ inputs.runsOn }}
+    container:
+      image: fedora:36
+      options: --privileged
+    steps:
+      # TODO: Fix this
+      - name: Install DNF Dependencies
+        run: sudo dnf install ostree rpm-ostree-2022.8-1.fc36 selinux-policy python3-pip -y
+      - name: Checkout Treefiles
+        uses: actions/checkout@v3
+      - name: Create Local Build Repository
+        run: ostree init --repo build-tree --mode archive
+      - name: Compose Tree
+        run: sudo rpm-ostree compose tree core.yaml --repo ../build-tree $FLAGS
+        env:
+          FLAGS: ${{ inputs.unifiedCore == true && '--unified-core' || '' }}
+        working-directory: ${{ inputs.osVariant }}
+      - name: Reset Permissions on Build Repo
+        run: sudo chmod -R 777 build-tree
+      - name: Generate OSTree Summary
+        run: ostree summary --repo build-tree -u
+      - name: Pack Non-Uploaded Tree
+        run: tar -cf build-tree.tar build-tree
+        if: ${{ !inputs.upload }}
+      - name: Upload Non-Uploaded Tree as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.osVariant }}-${{ inputs.runs-on }}.tar
+          path: build-tree.tar
+        if: ${{ !inputs.upload }}
+      - name: Setup GPG
+        run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
+        if: ${{ inputs.upload }}
+      - name: Import Signing Key
+        run: |
+          echo -n "$GPG_SIGNING_KEY" | gpg --import
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.signingKey }}
+        if: ${{ inputs.upload }}
+      - name: Sign Built Tree
+        run: ostree gpg-sign --repo build-tree ${{ inputs.ostreeRef }} ${{ inputs.gpgKeyID }}
+        if: ${{ inputs.upload }}
+      - name: Install ostree-push
+        run: pip3 install ostree-push
+        if: ${{ inputs.upload }}
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2.3.1
+        with:
+          key: ${{ secrets.repoPrivateKey }}
+          known_hosts: ${{ secrets.repoKnownHosts }}
+        if: ${{ inputs.upload }}
+      - name: Push Built Tree with Repo Server
+        run: ostree-push --repo build-tree repo@${{ secrets.repoIP }}:/var/www/repo.tauos.co/ostree
+        if: ${{ inputs.upload }}
