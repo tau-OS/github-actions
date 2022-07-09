@@ -44,7 +44,9 @@ jobs:
     steps:
       # TODO: Fix this
       - name: Install DNF Dependencies
-        run: sudo dnf install ostree rpm-ostree-2022.8-1.fc36 selinux-policy python3-pip -y
+        run: sudo dnf install ostree rpm-ostree-2022.8-1.fc36 selinux-policy python3-pip jq -y
+      - name: Install Python Dependencies
+        run: pip3 install ostree-push yq
       - name: Checkout Treefiles
         uses: actions/checkout@v3
       - name: Create Local Build Repository
@@ -78,9 +80,6 @@ jobs:
         if: ${{ inputs.upload }}
       - name: Sign Built Tree
         run: ostree gpg-sign --repo build-tree $(cat ${{ matrix.variant }}/core.yaml | yq .ref | sed 's/\${basearch}/${{ inputs.runsOn == 'ARM64' && 'aarch64' || 'x86_64' }}/g') ${{ inputs.gpgKeyID }}
-        if: ${{ inputs.upload }}
-      - name: Install ostree-push
-        run: pip3 install ostree-push
         if: ${{ inputs.upload }}
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2.3.1
