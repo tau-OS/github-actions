@@ -11,9 +11,8 @@ on:
         default: false
         required: false
       runsOn:
-        default: ubuntu-latest
         type: string
-        required: false
+        required: true
       gpgKeyID:
         required: true
         type: string
@@ -33,10 +32,14 @@ on:
 
 jobs:
   compose:
-    runs-on: ${{ inputs.runsOn }}
+    runs-on: ${{ matrix.runsOn }}
     container:
       image: fedora:36
       options: --privileged
+    strategy:
+      matrix:
+        runsOn: ${{ fromJSON(inputs.runsOn) }}
+        variant: ${{ fromJSON(inputs.osVariant) }}
     steps:
       # TODO: Fix this
       - name: Install DNF Dependencies
@@ -49,7 +52,7 @@ jobs:
         run: sudo rpm-ostree compose tree core.yaml --repo ../build-tree $FLAGS
         env:
           FLAGS: ${{ inputs.unifiedCore == true && '--unified-core' || '' }}
-        working-directory: ${{ inputs.osVariant }}
+        working-directory: ${{ matrix.variant }}
       - name: Reset Permissions on Build Repo
         run: sudo chmod -R 777 build-tree
       - name: Generate OSTree Summary
@@ -60,7 +63,7 @@ jobs:
       - name: Upload Non-Uploaded Tree as Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.osVariant }}-${{ inputs.runs-on }}.tar
+          name: ${{ matrix.variant }}-${{ inputs.runs-on }}.tar
           path: build-tree.tar
         if: ${{ !inputs.upload }}
       - name: Setup GPG
@@ -73,7 +76,7 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.signingKey }}
         if: ${{ inputs.upload }}
       - name: Sign Built Tree
-        run: ostree gpg-sign --repo build-tree $(cat ${{ inputs.osVariant }}/core.yaml | yq .ref | sed 's/\${basearch}/${{ inputs.runsOn == 'ARM64' && 'aarch64' || 'x86_64' }}/g') ${{ inputs.gpgKeyID }}
+        run: ostree gpg-sign --repo build-tree $(cat ${{ matrix.variant }}/core.yaml | yq .ref | sed 's/\${basearch}/${{ inputs.runsOn == 'ARM64' && 'aarch64' || 'x86_64' }}/g') ${{ inputs.gpgKeyID }}
         if: ${{ inputs.upload }}
       - name: Install ostree-push
         run: pip3 install ostree-push
