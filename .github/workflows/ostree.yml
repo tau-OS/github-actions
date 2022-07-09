@@ -79,7 +79,7 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.signingKey }}
         if: ${{ inputs.upload }}
       - name: Sign Built Tree
-        run: ostree gpg-sign --repo build-tree $(cat ${{ matrix.variant }}/core.yaml | yq -r .ref | sed 's/\${basearch}/${{ inputs.runsOn == 'ARM64' && 'aarch64' || 'x86_64' }}/g') ${{ inputs.gpgKeyID }}
+        run: ostree gpg-sign --repo build-tree $(cat ${{ matrix.variant }}/core.yaml | yq -r .ref | sed 's/\${basearch}/${{ matrix.runsOn == 'ARM64' && 'aarch64' || 'x86_64' }}/g') ${{ inputs.gpgKeyID }}
         if: ${{ inputs.upload }}
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2.3.1
