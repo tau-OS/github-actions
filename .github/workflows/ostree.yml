@@ -3,9 +3,6 @@ name: Compose OSTree
 on:
   workflow_call:
     inputs:
-      ostreeRef:
-        required: true
-        type: string
       osVariant:
         required: true
         type: string
@@ -76,7 +73,7 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.signingKey }}
         if: ${{ inputs.upload }}
       - name: Sign Built Tree
-        run: ostree gpg-sign --repo build-tree ${{ inputs.ostreeRef }} ${{ inputs.gpgKeyID }}
+        run: ostree gpg-sign --repo build-tree $(cat ${{ inputs.osVariant }}/core.yaml | yq .ref | sed 's/\${basearch}/${{ inputs.runsOn == 'ARM64' && 'aarch64' || 'x86_64' }}/g') ${{ inputs.gpgKeyID }}
         if: ${{ inputs.upload }}
       - name: Install ostree-push
         run: pip3 install ostree-push
