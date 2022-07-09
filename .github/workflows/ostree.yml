@@ -44,7 +44,7 @@ jobs:
     steps:
       # TODO: Fix this
       - name: Install DNF Dependencies
-        run: sudo dnf install ostree ostree-devel rpm-ostree-2022.8-1.fc36 selinux-policy python3-pip jq @development-tools gcc cairo-devel -y
+        run: sudo dnf install ostree ostree-devel rpm-ostree-2022.8-1.fc36 selinux-policy python3-pip jq @development-tools gcc cairo-devel python3-devel -y
       - name: Install Python Dependencies
         run: pip3 install ostree-push yq
       - name: Checkout Treefiles
