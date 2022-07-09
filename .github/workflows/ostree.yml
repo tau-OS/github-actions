@@ -37,6 +37,7 @@ jobs:
       image: fedora:36
       options: --privileged
     strategy:
+      fail-fast: false
       matrix:
         runsOn: ${{ fromJSON(inputs.runsOn) }}
         variant: ${{ fromJSON(inputs.osVariant) }}
