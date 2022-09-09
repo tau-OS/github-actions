@@ -44,18 +44,23 @@ jobs:
     steps:
       # TODO: Fix this
       - name: Install DNF Dependencies
-        run: sudo dnf install ostree ostree-devel rpm-ostree selinux-policy python3-pip jq @development-tools gcc cairo-devel python3-devel 'pkgconfig(gobject-introspection-1.0)' 'pkgconfig(cairo-gobject)' -y
+        run: sudo dnf install ostree ostree-devel rpm-ostree selinux-policy python3-pip jq @development-tools gcc cairo-devel python3-devel 'pkgconfig(gobject-introspection-1.0)' 'pkgconfig(cairo-gobject)' 'dnf-command(config-manager)' -y
+      - name: Add tauOS DNF Repo
+        run: sudo dnf config-manager --add-repo='https://repo.tauos.co/current.repo'
+      - name: Install Melody
+        run: sudo dnf -y install melody
       - name: Install Python Dependencies
         run: pip3 install ostree-push yq
       - name: Checkout Treefiles
         uses: actions/checkout@v3
       - name: Create Local Build Repository
         run: ostree init --repo build-tree --mode archive
+      - name: Compile Tree using Melody
+        run: melody compile ${{ matrix.variant }}/core.yaml out
       - name: Compose Tree
-        run: sudo rpm-ostree compose tree core.yaml --repo ../build-tree $FLAGS
+        run: sudo rpm-ostree compose tree out/0.yaml --repo ./build-tree $FLAGS
         env:
           FLAGS: ${{ inputs.unifiedCore == true && '--unified-core' || '' }}
-        working-directory: ${{ matrix.variant }}
       - name: Reset Permissions on Build Repo
         run: sudo chmod -R 777 build-tree
       - name: Generate OSTree Summary
