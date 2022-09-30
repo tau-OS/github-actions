@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: Install mock configs
         run: |
-          dnf install -y git https://lapis.ultramarine-linux.org/kojifiles/packages/mock-core-configs/37.7/3.um36/noarch/mock-core-configs-37.7-3.um36.noarch.rpm
+          dnf install -y git gcc https://lapis.ultramarine-linux.org/kojifiles/packages/mock-core-configs/37.7/3.um36/noarch/mock-core-configs-37.7-3.um36.noarch.rpm
       - uses: actions/checkout@v3
         with:
           submodules: "recursive"
