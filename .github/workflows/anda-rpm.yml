@@ -1,0 +1,54 @@
+name: Anda RPM
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      runsOn:
+        required: false
+        default: ubuntu-latest
+        type: string
+      subatomicServer:
+        required: false
+        default: https://subatomic.fyralabs.com
+        type: string
+      subatomicRepo:
+        required: true
+        type: string
+      upload:
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      subatomicToken:
+        required: true
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runsOn }}
+    container:
+      image: ghcr.io/ultramarine-linux/ultramarine:37
+      options: --cap-add=SYS_ADMIN --privileged
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+      - name: Install dependencies
+        run: |
+          dnf install -y anda subatomic https://lapis.ultramarine-linux.org/kojifiles/packages/mock-core-configs/37.7/3.um36/noarch/mock-core-configs-37.7-3.um36.noarch.rpm
+      - name: Build with Anda
+        run: anda build ${{ inputs.name }} --package rpm
+      - name: Pack Non-Uploaded Build
+        run: tar -cf anda-build.tar anda-build
+        if: ${{ !inputs.upload }}
+      - name: Upload Non-Uploaded Build as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.variant }}-${{ inputs.runs-on }}.tar
+          path: anda-build.tar
+        if: ${{ !inputs.upload }}
+      - name: Upload to Subatomic
+        run: subatomic upload --server ${{ inputs.subatomicServer }} --token ${{ secrets.subatomicToken }} ${{ inputs.repo }} anda-build/rpms/rpms/* anda-build/rpms/srpms/*
+        if: ${{ inputs.upload }}
