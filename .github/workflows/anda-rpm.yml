@@ -32,6 +32,9 @@ jobs:
       image: fedora:36
       options: --cap-add=SYS_ADMIN --privileged
     steps:
+      - name: Install mock configs
+        run: |
+          dnf install -y git https://lapis.ultramarine-linux.org/kojifiles/packages/mock-core-configs/37.7/3.um36/noarch/mock-core-configs-37.7-3.um36.noarch.rpm
       - uses: actions/checkout@v3
         with:
           submodules: "recursive"
@@ -48,9 +51,6 @@ jobs:
           args: anda
       - name: Install Subatomic
         run: go install github.com/FyraLabs/subatomic/cli@latest
-      - name: Install mock configs
-        run: |
-          dnf install -y  https://lapis.ultramarine-linux.org/kojifiles/packages/mock-core-configs/37.7/3.um36/noarch/mock-core-configs-37.7-3.um36.noarch.rpm
       - name: Build with Anda
         run: anda build ${{ inputs.name }} --package rpm -c ultramarine-37-x84_64
       - name: Pack Non-Uploaded Build
