@@ -52,7 +52,7 @@ jobs:
         run: |
           dnf install -y  https://lapis.ultramarine-linux.org/kojifiles/packages/mock-core-configs/37.7/3.um36/noarch/mock-core-configs-37.7-3.um36.noarch.rpm
       - name: Build with Anda
-        run: anda build ${{ inputs.name }} --package rpm
+        run: anda build ${{ inputs.name }} --package rpm -c ultramarine-37-x84_64
       - name: Pack Non-Uploaded Build
         run: tar -cf anda-build.tar anda-build
         if: ${{ !inputs.upload }}
