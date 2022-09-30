@@ -63,5 +63,5 @@ jobs:
           path: anda-build.tar
         if: ${{ !inputs.upload }}
       - name: Upload to Subatomic
-        run: subatomic-cli upload --server ${{ inputs.subatomicServer }} --token ${{ secrets.subatomicToken }} ${{ inputs.repo }} anda-build/rpms/rpms/* anda-build/rpms/srpms/*
+        run: subatomic-cli upload --server ${{ inputs.subatomicServer }} --token ${{ secrets.subatomicToken }} ${{ inputs.repo }} anda-build/rpm/rpms/* anda-build/rpm/srpms/*
         if: ${{ inputs.upload }}
