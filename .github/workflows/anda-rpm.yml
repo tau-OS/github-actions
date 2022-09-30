@@ -52,7 +52,7 @@ jobs:
       - name: Install Subatomic
         run: go install github.com/FyraLabs/subatomic/cli@latest
       - name: Build with Anda
-        run: anda build ${{ inputs.name }} --package rpm -c ultramarine-37-x84_64
+        run: anda build ${{ inputs.name }} --package rpm -c ultramarine-37-x86_64
       - name: Pack Non-Uploaded Build
         run: tar -cf anda-build.tar anda-build
         if: ${{ !inputs.upload }}
