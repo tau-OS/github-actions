@@ -29,7 +29,7 @@ jobs:
   build:
     runs-on: ${{ inputs.runsOn }}
     container:
-      image: ghcr.io/ultramarine-linux/ultramarine:36
+      image: fedora:36
       options: --cap-add=SYS_ADMIN --privileged
     steps:
       - uses: actions/checkout@v3
