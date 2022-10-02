@@ -53,15 +53,13 @@ jobs:
         run: go install github.com/FyraLabs/subatomic/subatomic-cli@latest
       - name: Build with Anda
         run: anda build ${{ inputs.name }} --package rpm -c ultramarine-37-x86_64
-      - name: Pack Non-Uploaded Build
+      - name: Pack Build
         run: tar -cf anda-build.tar anda-build
-        if: ${{ !inputs.upload }}
-      - name: Upload Non-Uploaded Build as Artifact
+      - name: Upload Build as Artifact
         uses: actions/upload-artifact@v3
         with:
           name: anda-build-${{ inputs.runsOn }}.tar
           path: anda-build.tar
-        if: ${{ !inputs.upload }}
       - name: Upload to Subatomic
         run: subatomic-cli upload --server ${{ inputs.subatomicServer }} --token ${{ secrets.subatomicToken }} ${{ inputs.repo }} anda-build/rpm/rpms/* anda-build/rpm/srpms/*
         if: ${{ inputs.upload }}
