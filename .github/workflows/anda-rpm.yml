@@ -45,26 +45,13 @@ jobs:
 
       - name: Add repository
         run: |
-          dnf config-manager --add-repo https://github.com/FyraLabs/subatomic-repos/raw/main/fe37.repo
+          dnf config-manager --add-repo https://github.com/FyraLabs/subatomic-repos/raw/main/${{ inputs.subatomicRepo }}.repo
       - name: Install mock configs
         run: |
           dnf install -y createrepo_c git gcc curl wget anda subatomic-cli ${{ inputs.mockConfigPackage }}
       - uses: actions/checkout@v3
         with:
           submodules: "recursive"
-      - uses: actions/setup-go@v3
-        with:
-          go-version: "^1.19"
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - name: Install Anda
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: anda
-      - name: Install Subatomic
-        run: go install github.com/FyraLabs/subatomic/subatomic-cli@latest
       - name: Build with Anda
         run: anda build ${{ inputs.name }} --package rpm -c ${{ inputs.mockConfig }}
       - name: Pack Build
