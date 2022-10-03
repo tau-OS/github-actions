@@ -53,7 +53,7 @@ jobs:
         with:
           submodules: "recursive"
       - name: Build with Anda
-        run: anda build ${{ inputs.name }} --package rpm -c ${{ inputs.mockConfig }} 2> /dev/stdout
+        run: anda build ${{ inputs.name }} --package rpm -c ${{ inputs.mockConfig }} 2>&1
       - name: Pack Build
         run: tar -cf anda-build.tar anda-build
       - name: Upload Build as Artifact
