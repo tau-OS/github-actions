@@ -35,7 +35,7 @@ jobs:
       - run: gzip -f $TAG.tar
       - run: spectool -g -R ${{ inputs.name }}.spec
       - run: rpmbuild -bs ${{ inputs.name }}.spec --define "_rpmdir $(pwd)" --define "_srcrpmdir $(pwd)" --undefine=_disable_source_fetch --define '_sourcedir .'
-      - run: mock --addrepo 'https://repo.tauos.co/releases/1.1/' --addrepo 'http://download1.rpmfusion.org/free/fedora/releases/37/Everything/x86_64/os/' --addrepo 'http://download1.rpmfusion.org/free/fedora/releases/37/Everything/aarch64/os/' --enable-network --resultdir . *.src.rpm || (cat build.log && exit 1)
+      - run: mock --addrepo 'https://repo.tauos.co/releases/1.1/' --addrepo 'https://download1.rpmfusion.org/free/fedora/development/37/Everything/x86_64/os/' --addrepo 'https://download1.rpmfusion.org/free/fedora/development/37/Everything/aarch64/os/' --enable-network --resultdir . *.src.rpm || (cat build.log && exit 1)
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
