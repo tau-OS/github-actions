@@ -34,7 +34,7 @@ jobs:
   compose:
     runs-on: ${{ matrix.runsOn }}
     container:
-      image: fedora:36
+      image: fedora:37
       options: --privileged
     strategy:
       fail-fast: false

@@ -17,7 +17,7 @@ jobs:
   sign:
     runs-on: ubuntu-latest
     container:
-      image: fedora:latest
+      image: fedora:37
     steps:
       - uses: actions/download-artifact@v3
         with:
