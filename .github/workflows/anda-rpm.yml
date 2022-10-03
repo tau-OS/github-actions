@@ -21,6 +21,12 @@ on:
         required: false
         default: false
         type: boolean
+      mockConfig:
+        required: true
+        type: string
+      mockConfigPackage:
+        required: true
+        type: string
     secrets:
       subatomicToken:
         required: false
@@ -32,9 +38,17 @@ jobs:
       image: fedora:36
       options: --cap-add=SYS_ADMIN --privileged
     steps:
+
+      - name: Install DNF plugins
+        run: |
+          dnf install -y dnf-plugins-core
+
+      - name: Add repository
+        run: |
+          dnf config-manager --add-repo https://github.com/FyraLabs/subatomic-repos/raw/main/fe37.repo
       - name: Install mock configs
         run: |
-          dnf install -y createrepo_c git gcc curl wget https://lapis.ultramarine-linux.org/kojifiles/packages/mock-core-configs/37.7/3.um36/noarch/mock-core-configs-37.7-3.um36.noarch.rpm
+          dnf install -y createrepo_c git gcc curl wget anda subatomic-cli ${{ inputs.mockConfigPackage }}
       - uses: actions/checkout@v3
         with:
           submodules: "recursive"
@@ -52,7 +66,7 @@ jobs:
       - name: Install Subatomic
         run: go install github.com/FyraLabs/subatomic/subatomic-cli@latest
       - name: Build with Anda
-        run: anda build ${{ inputs.name }} --package rpm -c ultramarine-37-x86_64
+        run: anda build ${{ inputs.name }} --package rpm -c ${{ inputs.mockConfig }}
       - name: Pack Build
         run: tar -cf anda-build.tar anda-build
       - name: Upload Build as Artifact
