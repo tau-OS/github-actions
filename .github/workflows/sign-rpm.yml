@@ -17,13 +17,11 @@ jobs:
   sign:
     runs-on: ubuntu-latest
     container:
-      image: fedora:37
+      image: ghcr.io/tau-os/builder:main
     steps:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.name }}-${{ inputs.buildVariant }}-unsigned
-      - run: sudo dnf install -y rpm-sign
-      - run: sudo rpm --import https://tauos.co/gpg.asc
       - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
       - name: Import Signing Key
         run: |

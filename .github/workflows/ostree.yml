@@ -34,7 +34,7 @@ jobs:
   compose:
     runs-on: ${{ matrix.runsOn }}
     container:
-      image: fedora:37
+      image: ghcr.io/tau-os/builder:main
       options: --privileged
     strategy:
       fail-fast: false
@@ -42,15 +42,6 @@ jobs:
         runsOn: ${{ fromJSON(inputs.runsOn) }}
         variant: ${{ fromJSON(inputs.osVariant) }}
     steps:
-      # TODO: Fix this
-      - name: Install DNF Dependencies
-        run: sudo dnf install ostree ostree-devel rpm-ostree selinux-policy python3-pip jq @development-tools gcc cairo-devel python3-devel 'pkgconfig(gobject-introspection-1.0)' 'pkgconfig(cairo-gobject)' 'dnf-command(config-manager)' -y
-      - name: Add tauOS DNF Repo
-        run: sudo dnf config-manager --add-repo='https://repo.tauos.co/current.repo'
-      - name: Install Melody
-        run: sudo dnf -y install melody
-      - name: Install Python Dependencies
-        run: pip3 install ostree-push yq
       - name: Checkout Treefiles
         uses: actions/checkout@v3
       - name: Create Local Build Repository

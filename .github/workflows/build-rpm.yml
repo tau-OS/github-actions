@@ -16,10 +16,9 @@ jobs:
   build:
     runs-on: ${{ inputs.runsOn }}
     container:
-      image: fedora:37
+      image: ghcr.io/tau-os/builder:main
       options: --cap-add=SYS_ADMIN --privileged
     steps:
-      - run: sudo dnf install -y rpmdevtools make git mock rpm-build
       - uses: actions/checkout@v3
         with:
           submodules: 'recursive'
