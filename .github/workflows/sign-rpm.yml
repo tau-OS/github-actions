@@ -19,7 +19,7 @@ jobs:
     container:
       image: ghcr.io/tau-os/builder:main
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: ${{ inputs.name }}-${{ inputs.buildVariant }}-unsigned
       - run: echo "GPG_TTY=$(tty)" >> $GITHUB_ENV
